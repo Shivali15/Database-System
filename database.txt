@@ -1,0 +1,607 @@
+SQL:
+ The Structured Query Language 
+
+
+
+
+SQL Command Types
+1.DDL: Data Definition Language  : Define admissible database content (schema)
+2.DML: Data Manipulation Language  :Change and retrieve database content
+3.TCL: Transaction Control Language :  Groups SQL commands (transactions)
+4.DCL: Data Control Language  : Assign data access rights
+
+DCL: Data Control Language
+Constraints that limit admissible content of tables
+• DBMS enforces integrity constraints
+• Can be added to tables via "ALTER TABLE" command
+• Alternatively, can define when creating table
+
+Primary Key Constraint
+• A primary key constraint refers to a single table
+• It identifies a subset of columns as key columns
+• Fixing values for key columns must identify row
+• No two rows have same values in key columns
+
+Inserting Data From Files
+• Loading data from a file into a table:
+• COPY <table> FROM <path>
+DELIMITER <delimiter> NULL <null-string> CSV
+Inserting Data
+• Inserting one (fully specified) row into a table:
+• INSERT INTO <table> VALUES (<value-list>)
+• Inserting one (partially specified) row into a table:
+• INSERT INTO <table> (<column-list>)
+VALUES (<value-list>)
+
+
+Deleting Data
+• Deleting rows from a table that satisfy condition:
+• DELETE FROM <table> WHERE <condition>
+• <condition> specifies Boolean predicate
+• E.g., (in)equalities between columns
+• Will discuss conditions in detail later
+
+
+Updating Data
+• Updating specific rows and columns to new value:
+• UPDATE <table>
+SET <column> = <value>
+WHERE <condition>
+• Changes rows satisfying <condition>
+by writing <value> in <column>
+
+
+---------------------------------------------------------------------------------------------------------------------------
+
+Simple Query Format
+• SELECT <columns>
+FROM <table1> JOIN <table2> ON (<join-pred>) ...
+WHERE <where-pred>
+• <columns> is comma-separated list of columns
+• <table1> and <table2> are database relations
+• <join-pred> is condition defining matching tuples pairs
+• <where-pred> are additional conditions
+
+
+Composite Predicates
+• Logical conjunction via AND keyword
+• Logical disjunction via OR keyword
+• Negation via NOT keyword
+
+
+Join Syntax Alternatives
+• Simply specify names of columns that appear in multiple tables
+• <table1> JOIN <table2> USING (<column>)
+• Abbreviates <table1> JOIN <table2>
+ON (<table1>.<column> = <table2>.<column>)
+• "Natural joins" match values in columns with same name
+• <table1> NATURAL JOIN <table2>
+• Introduces equality conditions between columns of same name
+• No join keyword: FROM <table1>, <table2> WHERE <join-condition>
+
+
+
+
+Aggregation Queries
+• Can calculate aggregates over all rows of result relation
+• SQL Aggregates: COUNT, SUM, AVG, MIN, MAX
+• SUM, AVG, MIN, MAX: numerical expression parameter
+• COUNT(*) for counting rows in result relation
+• COUNT(<column>) counts rows with value in <column>
+• COUNT(DISTINCT <column>) counts number of
+distinct values in <column> in result relation
+
+---------------------------------------------------------------------------------------------------------------------------
+Ordering
+• ORDER BY <order-item-list>
+• <order-item> : <column> <direction>
+• <direction> : either ASC or DESC
+• Orders result rows by values in order items
+• Prioritize order items that appear earlier in list
+• Applied after grouping (for group-by queries)
+• Items must have unique value per group
+
+
+Limiting Output Size
+• Limit <Number> : only shows first <Number> result rows
+
+
+Unknown Values
+• Unknown values are called NULL values in SQL
+• SQL uses Ternary (i.e., Three-Valued Logic)
+• Outcome may be true, false, or unknown
+• Check for corresponding outcome
+• <expression> = TRUE
+• <expression> = FALSE
+• <expression> IS NULL (not: "= NULL")
+• WHERE condition evaluates to NULL - no result row!
+
+
+Joins with Unknowns I
+• Standard join keeps only matching row pairs
+• Eliminates rows without matching rows in other table
+• Sometimes we want to keep rows regardless
+• Can do that with OUTER JOINs
+• Fills up fields in missing row with NULL values
+
+Joins with Unknowns II
+• Keep each row in left table (plus standard join result):
+• <table-1> LEFT OUTER JOIN <table-2> ON ...
+• Keep each row in right table (plus standard result):
+• <table-1> RIGHT OUTER JOIN <table-2> ON ...
+• Keep rows in both tables (plus standard result):
+• <table-1> FULL OUTER JOIN <table-2> ON
+
+
+Set Operations
+• Union result tuples from two queries
+• <query-1> UNION <query-2> : eliminates duplicates
+• <query-1> UNION ALL <query-2> : keep duplicates
+• Intersect results from two queries
+• <query-1> INTERSECT <query-2>
+• Set difference between queries
+• <query-1> EXCEPT <query-2>
+• Results from <query-1> and <query-2> must be union-compatible
+
+
+Query Nesting
+• Can use queries as part of another query, e.g.
+• Query instead of table in FROM clause,
+• Query instead of conjunct in WHERE clause,
+• Query (containing query) vs. sub-query (contained query)
+• Correlated vs. uncorrelated sub-queries
+• Correlated sub-queries reference containing query
+
+
+Sub-Queries in Conditions
+• Check if sub-query result is empty
+• EXISTS(<sub-query>) : TRUE if non-empty
+• Check if sub-query result contains value
+• <value> IN (<sub-query>) : TRUE if contained
+• Check if condition holds for all/some sub-query rows
+• E.g., <value> >= ALL(<sub-query>) : TRUE if satisfied for all
+• E.g., <value> >= ANY(<sub-query>) : TRUE if satisfied for some
+
+
+-------------------------------------------------------------------------------------------------
+Storage:
+Tape Storage
+• Bits as magnetic information on tape
+• Very slow access (10s of seconds)
+• Moderate read speed (up to 300 MB/second)
+• Very cheap (around $0.02 per Gigabyte [source])
+• Used for long-term archival (e.g., by Google)
+• More info: Why the future of data storage is (still)
+magnetic tape, IEEE Spectrum, 2018.
+
+
+
+Hard Disk
+• Bits as magnetic information on platter
+• Patters spin under read/write heads
+• Slow access (10s of milliseconds access time)
+• Moderate read speed (around 200 MB/second)
+• Cheap (around $0.035 per Gigabyte)
+• Used for less frequently accessed data
+
+Solid State Drives
+• Bits as small electric charges
+• Elevated price (around $0.25 per Gigabyte)
+• Fast access (around 1 millisecond)
+• Elevated speed (around 500 MB/second)
+• Limited number of write cycles (memory wear)
+
+Main Memory
+• Bits as small electric charges
+• Expensive (several dollars per Gigabyte)
+• Very fast access (order of nanoseconds)
+• High bandwidth (Gigabytes per second)
+• Used to access hot data - all if economically feasible
+
+
+Caches
+• Bits as small electric charges
+• Typically organized as cache hierarchy
+• Very expensive (hundreds of dollars per Gigabyte)
+• Near-instantaneous access (few nanoseconds)
+• Very high bandwidth (tens of Gigabytes per second)
+• Used to store immediately relevant data
+
+-------------------------------------------------------------------------------------------------------------
+Indexes
+• Index: auxiliary data structure for finding data faster
+• Exactly same principle as for books!
+• Can have multiple indexes for same table, e.g.
+• One index for finding info on specific students
+• One index for finding info on specific courses
+
+Index stores references to data records
+• I.e., stores page IDs and slot IDs
+• Index groups records by values in specific columns
+• Those columns are called the index search key
+• Index retrieves records for specific search key values
+
+Index Types:
+• Tree indexes
+• Hash indexes
+
+Composite Keys
+• Index search key may consist of multiple columns
+• Must decide priority order between key columns
+• Key comparisons use that priority order
+• I.e., consider second column if same value in first etc.
+• Can use index for (in)equalities on prefix of key columns
+
+
+Indexes in Postgres
+• CREATE INDEX <index-name> on <table> (<columns>)
+• Creates index for table using specified search key
+• Refer to index later via <index-name>
+• <columns> is comma-separated column list (key)
+• DROP INDEX <index-name>
+• Delete index with given name
+
+Merging Index and Data
+• Idea: index stores data instead of references to data
+• This is called a clustered index
+• Can have at most one clustered index per table 
+• More efficient as it saves chasing one reference
+• More importantly: collocates data with same key
+
+Tree Index Variants
+• B+ tree index (focus so far) is very popular
+• Some tree indexes put data references in inner nodes
+• Some omit the links between leaf nodes
+• Also: differences in how updates are handled 
+
+Handling Updates
+• Index refers to database table
+• If data changes, so must the index!
+• Need to change index in case of inserts/deletes
+• Ideally: want to keep index balanced during updates
+• Not required but can improve efficiency!
+-------------------------------------------------------------------------------------------------------------
+Tree index: traverse search tree to find interesting leafs
+• Hash index: evaluate hash function to find buckets
+
+
+Static Hashing
+•Hash bucket pages contain references to data
+    Hash buckets are associated with hash values
+    Can use haash index to find entries with key Value
+        Calculate hash value h for V as h(V)
+     
+
+Global depth: how many hash bits Directory considers
+Local depth : how many hash bits for specific bucket
+
+
+
+Buffer manager:
+    Decides when to move data between disk and RAM
+    Tries to reduce data movement using heuristics
+    Buffer manager manages "buffer pool":
+        Buffer pool:  main memory reserved for DBMS
+        Deivided into pool sized slots called frames
+        Stores meta -data about each slot
+-------------------------------------------------------------------------------------------------------------
+
+Hash Join , Sort merge join:
+
+Hash join:
+    Want tuples with same value in join column
+    Same value in joinn column implies same hash value
+
+Join phase 1:
+    Partition data by hash values in join columns
+    Make partitions small enough to fit index memory
+
+Join phase 2:
+    Join each partition pair (same hash value ) separately
+
+
+Sort-merge join:
+    Also specific to equal join conditions
+    Phase 1: (sort)
+        Sort joined tables on join column
+
+    Phase 2(merge):
+        Efficiently merge sorted tables together
+
+-------------------------------------------------------------------------------------------------------------
+
+Projection and duplicate elimination via sorting:
+    sorting rows helps finding duplicates
+        duplicates appear consecutively
+    use variant of external sort alogorithm seen before
+        Apply projection during 1st pass over data
+        Eliminate in-memory duplicates during all steps
+        The result is duplicate-free and sorted
+        Can reduce no. of passes with main memory
+-------------------------------------------------------------------------------------------------------------
+
+
+GROUPING & AGGREGATION:
+
+Aggregation without groups:
+    SQL offers Min, Max, Sum, Count, Avg
+    Scan input and update in-memory aggregate
+        Can use const amount of memory
+        Cost of reading input data once
+    Count distinct requires duplicate elimination    
+
+Aggregation without groups:
+    Can use hashing: 
+        Maintain has table of group keys with aggregate
+    Can use strings:
+        Sort on group keys aggregate groups consecutively
+    Can use indexes:
+        Index key must contain group-by keys
+
+
+-------------------------------------------------------------------------------------------------------------
+
+Transaction in Postgres:
+    A sequence of updates (or queries) that is connected
+    Begin a Transaction with command BEGIN 
+    End a Transaction with command COMMIT
+    Everything in between belongs to Transaction
+
+-----------------------------------------------------------------------------------------------------------------
+
+  
+FOREIGN key : It is a feild in one table that refers to the primary key in another table
+
+Schema Definition in SQL
+• CREATE TABLE <table> (<table-def>)
+ - <table> is the table name
+ -<table-def> is comma-separated column definitions
+ -Column definition is of form <col-name> <col-type>
+ 
+ DML
+ insert,
+ delete,
+ update,
+ analyze.
+ 
+1) Inserting Data
+• Inserting one (fully specified) row into a table:
+• INSERT INTO <table> VALUES (<value-list>)
+• Inserting one (partially specified) row into a table:
+• INSERT INTO <table> (<column-list>) VALUES (<value-list>)
+
+2) Deleting Data
+• Deleting rows from a table that satisfy condition:
+• DELETE FROM <table> WHERE <condition>
+• <condition> specifies Boolean predicate
+• E.g., (in)equalities between columns
+
+3) Updating Data
+• Updating specific rows and columns to new value:
+• UPDATE <table>
+  SET <column> = <value>
+  WHERE <condition>
+• Changes rows satisfying <condition> by writing <value> in <column>
+
+Simple SQL Queries
+
+• An SQL query describes a new relation to generate
+• Simple SQL queries consist of three parts
+• SELECT: describes columns of relation to generate
+• FROM: describes source relations and how to match
+• WHERE: defines conditions result rows must satisfy 
+
+Simple Query Format
+
+• SELECT <columns> FROM <table1> JOIN <table2> ON (<join-pred>) ...WHERE <where-pred>
+• <columns> is comma-separated list of columns
+• <table1> and <table2> are database relations
+• <join-pred> is condition defining matching tuples pairs
+• <where-pred> are additional conditions
+
+Composite Predicates -
+• Logical conjunction via AND keyword
+• Logical disjunction via OR keyword
+• Negation via NOT keyword
+• E.g., Cname = 'CS4320' OR Cname = 'CS5320'
+
+Diverse Select Clauses
+• Shortcuts for selecting multiple columns
+    -> * selects all columns
+    -> <table>.* selects all columns from <table>
+• Can use arithmetic expressions in select clause
+    -> E.g., SELECT 3 * (<column1> + <column2>) 
+• Can assign new names for output columns
+
+Join Syntax Alternatives
+• Simply specify names of columns that appear in multiple tables
+   -> <table1> JOIN <table2> USING (<column>)
+   -> Abbreviates <table1> JOIN <table2> ON (<table1>.<column> = <table2>.<column>)
+• "Natural joins" match values in columns with same name
+   -> <table1> NATURAL JOIN <table2>
+   -> Introduces equality conditions between columns of same name
+• No join keyword: FROM <table1>, <table2> WHERE <join-condition>
+
+Aggregation Queries
+• Can calculate aggregates over all rows of result relation
+• SQL Aggregates: COUNT, SUM, AVG, MIN, MAX
+   SUM, AVG, MIN, MAX: numerical expression parameter
+   COUNT(*) for counting rows in result relation
+   COUNT(<column>) counts rows with value in <column>
+   COUNT(DISTINCT <column>) counts number of distinct values in <column> in result relation
+   
+Aggregation by Group
+• Common: want aggregates for multiple data subsets
+• Use SQL GROUP-BY clause to define data subsets
+• GROUP BY <column-list> - distinguish data subsets 
+based on their values in specified columns
+
+Syntax for Ordering
+• ORDER BY <order-item-list>
+• <order-item> : <column> <direction>
+• <direction> : either ASC or DESC
+• Orders result rows by values in order items
+• Prioritize order items that appear earlier in list
+• Applied after grouping (for group-by queries)
+  -> Items must have unique value per group
+  
+Limiting Output Size
+• Limit <Number> : only shows first <Number> result rows
+
+Unknown Values
+• Unknown values are called NULL values in SQL
+• SQL uses Ternary (i.e., Three-Valued Logic)
+  Outcome may be true, false, or unknown
+• Check for corresponding outcome
+  <expression> = TRUE
+  <expression> = FALSE
+  <expression> IS NULL (not: "= NULL")
+• WHERE condition evaluates to NULL - no result row!
+
+Joins with Unknowns I
+• Standard join keeps only matching row pairs
+• Eliminates rows without matching rows in other table
+• Sometimes we want to keep rows regardless
+• Can do that with OUTER JOINs
+• Fills up fields in missing row with NULL values
+
+Joins with Unknowns II
+• Keep each row in left table (plus standard join result):
+  <table-1> LEFT OUTER JOIN <table-2> ON ...
+• Keep each row in right table (plus standard result):
+  <table-1> RIGHT OUTER JOIN <table-2> ON ...
+• Keep rows in both tables (plus standard result):
+  <table-1> FULL OUTER JOIN <table-2> ON
+  
+ Set Operations
+• Union result tuples from two queries
+  <query-1> UNION <query-2> : eliminates duplicates
+  <query-1> UNION ALL <query-2> : keep duplicates
+• Intersect results from two queries
+  <query-1> INTERSECT <query-2>
+• Set difference between queries
+  <query-1> EXCEPT <query-2>
+• Results from <query-1> and <query-2> must be union-compatible
+
+
+2) DATA STORAGE
+
+The Memory Hierarchy -FASTER ACCESS  
+Registers
+CPU Cache
+Main Memory
+Flash/USB Memory
+Hard Disk
+Tape Backup          -HIGHER CAPACITY
+
+3) TREE INDEXES
+
+Indexes
+• Index: auxiliary data structure for finding data faster
+• Exactly same principle as for books!
+• Can have multiple indexes for same table
+
+Indexes in Postgres
+• CREATE INDEX <index-name> on <table> (<columns>)
+  Creates index for table using specified search key
+  Refer to index later via <index-name>
+  <columns> is comma-separated column list (key)
+• DROP INDEX <index-name>
+  Delete index with given name
+  
+Merging Index and Data
+• Idea: index stores data instead of references to data
+• This is called a clustered index
+• Can have at most one clustered index per table
+• More efficient as it saves chasing one reference
+• More importantly: collocates data with same key
+
+Handling Updates
+• Index refers to database table
+• If data changes, so must the index!
+• Need to change index in case of inserts/deletes
+• Ideally: want to keep index balanced during updates
+• Not required but can improve efficiency!
+
+B+ Trees
+• One of the most popular index structure
+• E.g., the default index in Postgres
+• Balances tree after insert/delete operations
+• Keeps the tree compact
+• Each node (except root) is at least half full!
+• I.e., number entries between d and 2*d (d is "order")
+
+HASH INDEXES
+
+Hash vs. Tree Indexes
+• Tree index: traverse search tree to find interesting leafs
+• Hash index: evaluate hash function to find buckets
+
+QUERY PROCESSING OVERVIEW
+
+Buffer Manager
+• Decides when to move data between disk and RAM
+• Tries to reduce data movements using heuristics
+• Buffer manager manages "buffer pool"
+• Buffer pool: main memory reserved for DBMS
+• Divided into page-sized slots called "frames"
+• Stores meta-data about each slot
+
+Frame Properties
+• Page ID: which page is currently stored in frame?
+• Allows matching page requests to frames
+• Pin count: how many processes are using a page?
+• Can only evict page if pin count reaches zero
+• Dirty bit: in-memory page deviates from disk version?
+• Must write page to disk before evicting it
+
+Query Processing
+• Input query is parsed (Parser) and simplified (Rewriter)
+• Query optimizer generates optimized execution plan
+• Executing plan (Executor) produces query result
+
+Operators
+• Query plans use fixed set of standard operators
+• Consumes relation(s) and produces one relation
+• Filter operator (sigma symbol): discard rows based on condition
+• Projection operator (pie symbol): discard columns
+• Join operator (⨝): find matching tuple pairs
+
+GROUPING & AGGREGATION  
+
+Aggregation without groups:
+    - SQL offers Min, Max, Sum, Count, Avg
+    -Scan input and update in-memory aggregate
+        - Can use const amount of memory
+        - Cost of reading input data once
+    - Count distinct requires duplicate elimination    
+
+Aggregation without groups:
+    - Can use hashing: 
+        - Maintain has table of group keys with aggregate
+    - Can use strings:
+        - Sort on group keys aggregate groups consecutively
+    - Can use indexes:
+        - Index key must contain group- by keys
+
+
+datbase transactions -
+
+-> A sequence of updates (or queries) that is connected
+ ->DBMS commands for assigning queries to Transactions
+
+Transaction in Postgres
+- Begin a Transaction with command BEGIN 
+- End a Transaction with command COMMIT
+- Everything in between belongs to Transaction
+
+
+ACID Guarantees
+Most RDBMS gives ACID guarantee for Transaction
+
+  A: Atomicity -(either execut all or nothing)
+  C: Consistency -(enforce all integrity constraints)
+  I: Isolation -(avoid interleaving transactions badly)
+  D: Durability -(ensures that updates are not last)
+
+
